@@ -92,14 +92,19 @@ class Rule(id: String)(val effect: Effect,
 
   //override def allIds: List[String] = List(id)
 
-  override def toString = s"Policy #$fqid"
+  override def toString = "Rule(" +
+    effect +
+    ") iff " +
+    condition +
+    "\n"
+
 }
 
 /**
  * Represents a policy of one or more rules and/or subpolicies.
  */
-class Policy(id: String)(val target: Expression = AlwaysTrue, val pca: CombinationAlgorithm,
-  val subpolicies: List[AbstractPolicy], val obligations: List[Obligation] = List.empty)
+class Policy(id: String)(var target: Expression = AlwaysTrue, var pca: CombinationAlgorithm,
+  var subpolicies: List[AbstractPolicy], var obligations: List[Obligation] = List.empty)
   extends AbstractPolicy(id) with Logging {
 
   // assign this PolicySet as parent to the children
@@ -134,8 +139,14 @@ class Policy(id: String)(val target: Expression = AlwaysTrue, val pca: Combinati
   //override def allIds: List[String] = id :: subpolicies.flatMap(_.allIds)
 
   override def toString = {
-    val subs = subpolicies.toString
-    s"PolicySet #$id = [${subs.substring(5, subs.length - 1)}]"
+      val one = "Policy(" +
+      pca +
+      " iff " +
+      target +
+      "): \n"
+    
+      val two = subpolicies.map { x => x.toString }
+      one + "\t" +  two.mkString("\t") + "\n"
   }
 }
 
